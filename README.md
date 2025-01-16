@@ -1,12 +1,12 @@
 # ESP32 Radar System with Ultrasonic Sensor and Servo Motor
 
-## 🌟 **Overview**
+## **Overview**
 
 This project implements a radar-like system using an **ESP32 microcontroller**, an ultrasonic sensor, a servo motor, and a speaker. The servo motor sweeps the ultrasonic sensor across a range of angles, measuring distances and displaying them on the serial monitor. A speaker provides auditory feedback for each measurement.
 
 ---
 
-## 🛠️ **Components Used**
+## **Components Used**
 
 1. **Ultrasonic Sensor (HC-SR04)**
    - Emits ultrasonic waves to measure distances based on the echo return time.
@@ -22,7 +22,7 @@ This project implements a radar-like system using an **ESP32 microcontroller**, 
 
 ---
 
-## 🔌 **Pin Connections**
+## **Pin Connections**
 
 | Component         | ESP32 Pin     |
 |--------------------|---------------|
@@ -45,101 +45,59 @@ Below is the circuit diagram for connecting the components:
 
 ---
 
-## 📜 **Code Breakdown**
+## **Arduino Code Overview**
 
-### 🚀 Libraries Used
+The Arduino code controls the radar system by:
 
-```cpp
-#include <Servo.h>
-```
-- The `Servo` library is used to control the servo motor's rotation.
-
-### 📋 Global Variables
-
-1. **Pins**:
-   - Define pins for ultrasonic sensor (`trigPin`, `echoPin`), servo motor (`servoPin`), and speaker (`speakerPin`).
-
-2. **Servo Object**:
-   - `Servo myServo` creates an instance for servo motor control.
-
-3. **Distance Variables**:
-   - `duration_us`: Time for echo return.
-   - `distance_cm`: Distance to the object in centimeters.
-
-4. **Angle**:
-   - `angle`: Tracks the servo motor’s current position.
-
-### 🛠️ Setup Function
-
-```cpp
-void setup() {
-    myServo.attach(servoPin);
-    pinMode(trigPin, OUTPUT);
-    pinMode(echoPin, INPUT);
-    pinMode(speakerPin, OUTPUT);
-    Serial.begin(9600);
-    Serial.println("Radar System Initialized");
-}
-```
-- Initializes components and sets up serial communication.
-
-### 🔄 Main Loop
-
-```cpp
-void loop() {
-    for (angle = 0; angle <= 180; angle += 2) {
-        myServo.write(angle);
-        delay(30);
-        measureDistance();
-    }
-
-    for (angle = 180; angle >= 0; angle -= 2) {
-        myServo.write(angle);
-        delay(30);
-        measureDistance();
-    }
-}
-```
-- Moves the servo from 0° to 180° and back in 2° increments, measuring distances at each position.
-
-### 📏 Distance Measurement
-
-```cpp
-void measureDistance() {
-    digitalWrite(trigPin, LOW);
-    delayMicroseconds(2);
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
-
-    duration_us = pulseIn(echoPin, HIGH);
-    distance_cm = duration_us * 0.0343 / 2;
-
-    Serial.print("Angle: ");
-    Serial.print(angle);
-    Serial.print(", Distance: ");
-    if (duration_us == 0) {
-        Serial.println("Out of Range");
-    } else {
-        Serial.println(distance_cm);
-    }
-}
-```
-- Sends a pulse, measures echo time, and calculates distance.
-
-### 🎵 Speaker Beep
-
-```cpp
-void beepSpeaker() {
-    tone(speakerPin, 1000, 30);
-    delay(10);
-}
-```
-- Emits a 1000 Hz sound for 30 ms.
+- Initializing the servo motor, ultrasonic sensor, and speaker.
+- Moving the servo from 0° to 180° and back in 2° increments.
+- Measuring the distance to nearby objects using the ultrasonic sensor at each angle.
+- Logging the measured distance and angle to the serial monitor.
+- Providing auditory feedback through the speaker for each measurement.
 
 ---
 
-## 🎯 **How It Works**
+## **Python Visualization Script**
+
+A Python script is included to visualize the radar data using a graphical radar display. The script connects to the ESP32 via a serial port and creates a 180-degree radar visualization using **Pygame**.
+
+### Key Features:
+
+1. **Serial Data Reading**:
+   - Reads angle and distance data from the ESP32 via the specified serial port.
+   - Filters out-of-range data for a cleaner display.
+
+2. **Graphical Radar Display**:
+   - Displays a sweeping radar with a half-circle grid.
+   - Plots detected objects as red dots based on their angle and distance.
+   - Includes a dynamic sweeping line to simulate radar motion.
+
+3. **Concurrency**:
+   - Uses threading to read data and update the display simultaneously.
+
+### Python Script Highlights:
+
+- **Dependencies**: Ensure `pygame` and `pyserial` are installed using:
+  ```bash
+  pip install pygame pyserial
+  ```
+
+- **Execution**: Update the serial port in the script (e.g., `COM5`) and run:
+  ```bash
+  python radar_display.py
+  ```
+
+- **Code Example**:
+
+  ```python
+  for angle, distance in read_serial_data(port):
+      if 0 <= distance <= max_distance:
+          radar_data.append((angle, distance))
+  ```
+
+---
+
+## **How It Works**
 
 1. **Initialization**:
    - The radar system initializes the servo motor, ultrasonic sensor, and speaker.
@@ -150,12 +108,12 @@ void beepSpeaker() {
 3. **Distance Measurement**:
    - At each angle, the ultrasonic sensor measures the distance to nearby objects and logs it to the serial monitor.
 
-4. **Auditory Feedback**:
-   - A beep sound provides auditory feedback for each measurement.
+4. **Visualization**:
+   - The Python script visualizes the radar data in real time on a Pygame display.
 
 ---
 
-## 🖥️ **Serial Output Example**
+## 🖥**Serial Output Example**
 
 ```
 Radar System Initialized
@@ -167,27 +125,28 @@ Angle: 4, Distance: Out of Range
 
 ---
 
-## 📦 **Repository Content**
+## **Repository Content**
 
-- **`main.ino`**: Arduino sketch for the radar system.
-- **`CircuitDiagram.png`**: Visual representation of the connections.
+- **`radar.ino`**: Arduino sketch for the radar system.
+- **`radar.py`**: Python script for visualizing radar data.
 - **`README.md`**: Project documentation.
 
 ---
 
-## 📸 **Demo**
+## **Demo**
 
-Will look similar to this Demo done by [Coders Cafe](https://www.youtube.com/@CodersCafeTech/shorts)
-![Radar System Demo](https://www.youtube.com/shorts/o7DMHJKhpws)
+Will look similar to this Demo done by [Coders Cafe](https://www.youtube.com/@CodersCafeTech/shorts).
+
+The Demo: ![Radar System Demo](https://www.youtube.com/shorts/o7DMHJKhpws)!
 
 ---
 
-## 📜 **License**
+## **License**
 
 This project is licensed under the MIT License. See `LICENSE` for details.
 
 ---
 
-## 🌐 **Contact**
+## **Contact**
 
 For questions or suggestions, reach out at [mail@tgm.ac.at](mailto:mail@tgm.ac.at).
